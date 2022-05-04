@@ -15,4 +15,9 @@
         android:title="HEX Mode"
         android:checkable="true"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/battery_status"
+        android:title="Battery status"
+        android:checkable="false"
+        app:showAsAction="never" />
 </menu>

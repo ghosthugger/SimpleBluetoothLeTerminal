@@ -169,9 +169,17 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
             sendText.setHint(hexEnabled ? "HEX mode" : "");
             item.setChecked(hexEnabled);
             return true;
+        } else if (id == R.id.battery_status) {
+            startBatteryStatus();
+            return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void startBatteryStatus() {
+        Fragment newFragment = new BatteryStatusFragment();
+        getFragmentManager().beginTransaction().replace(R.id.fragment, newFragment, "Battery status").addToBackStack(null).commit();
     }
 
     /*
