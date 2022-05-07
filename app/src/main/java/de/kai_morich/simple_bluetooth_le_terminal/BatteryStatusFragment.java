@@ -1,16 +1,16 @@
 package de.kai_morich.simple_bluetooth_le_terminal;
 
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.VectorDrawable;
 import android.os.Bundle;
 
 import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,6 +29,23 @@ public class BatteryStatusFragment extends Fragment {
     private String mParam2;
 
     private ImageView arrow;
+    private TextView stateOfCharge;
+
+    private int mInterval = 5000; // 5 seconds by default, can be changed later
+    private Handler mHandler;
+    Runnable mStatusChecker = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                updateRandom();
+            } finally {
+                // 100% guarantee that this always happens, even if
+                // your update method throws an exception
+                mHandler.postDelayed(mStatusChecker, mInterval);
+            }
+        }
+    };
+
     public BatteryStatusFragment() {
         // Required empty public constructor
     }
@@ -59,24 +76,45 @@ public class BatteryStatusFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        mHandler = new Handler();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopRepeatingTask();
+    }
+
+    void startRepeatingTask() {
+        mStatusChecker.run();
+    }
+
+    void stopRepeatingTask() {
+        mHandler.removeCallbacks(mStatusChecker);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_battery_status, container, false);
-        arrow = view.findViewById(R.id.imageViewArrow);
+//        arrow = view.findViewById(R.id.currentFlowArrow);
 
-        BatteryStatus batteryStatus = new BatteryStatus();
-        batteryStatus.current = (Math.random() - 0.5)*100;
-        update(batteryStatus);
+        Object tmp = view.findViewById(R.id.stateOfCharge);
+        stateOfCharge = (TextView)view.findViewById(R.id.stateOfCharge);
+
+        startRepeatingTask();
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_battery_status, container, false);
+        return view;
+    }
+
+    public void updateRandom() {
+        update(BatteryStatus.getRandomState());
     }
 
     public void update(BatteryStatus status) {
 
-        Group group = arrow.findViewById(R.id.arrow_rotation);
+/*        Group group = arrow.findViewById(R.id.arrow_rotation);
 
         float angle = 0;
         if(status.current>0){
@@ -84,5 +122,11 @@ public class BatteryStatusFragment extends Fragment {
         }
 
 //        group.setRotation(angle);
+
+*/
+
+        String stateOfChargeText=String.format("%3.0f%%",status.chargeState);
+        stateOfCharge.setText(stateOfChargeText);
+
     }
 }

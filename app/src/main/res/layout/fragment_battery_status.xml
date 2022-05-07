@@ -12,54 +12,93 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            >
         <LinearLayout
+            android:id="@+id/cells"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_marginHorizontal="50dp"
             android:layout_marginTop="50dp"
             android:orientation="horizontal">
 
-            <ImageView
+            <TextView
+                android:id="@+id/cell1"
+                android:text="2.23v"
+                android:textSize="25dp"
+                android:textColor="#000000"
+                android:gravity="center"
                 android:layout_width="50dp"
                 android:layout_height="200dp"
                 android:layout_marginEnd="12dp"
                 android:layout_weight="1"
                 android:background="@drawable/box" />
 
-            <ImageView
-                android:id="@+id/imageView"
+            <TextView
+                android:id="@+id/cell2"
+                android:text="2.23v"
+                android:textSize="25dp"
+                android:textColor="#000000"
+                android:gravity="center"
                 android:layout_width="50dp"
                 android:layout_height="200dp"
                 android:layout_marginEnd="12dp"
                 android:layout_weight="1"
                 android:background="@drawable/box" />
 
-            <ImageView
-                android:id="@+id/imageView2"
+            <TextView
+                android:id="@+id/cell3"
+                android:text="2.23v"
+                android:textSize="25dp"
+                android:textColor="#000000"
+                android:gravity="center"
                 android:layout_width="50dp"
                 android:layout_height="200dp"
                 android:layout_marginEnd="12dp"
                 android:layout_weight="1"
                 android:background="@drawable/box" />
 
-            <ImageView
-                android:id="@+id/imageView3"
+            <TextView
+                android:id="@+id/cell4"
+                android:text="2.23v"
+                android:textSize="25dp"
+                android:textColor="#000000"
+                android:gravity="center"
                 android:layout_width="50dp"
                 android:layout_height="200dp"
                 android:layout_marginEnd="12dp"
                 android:layout_weight="1"
                 android:background="@drawable/box" />
         </LinearLayout>
+            <TextView
+                android:id="@+id/stateOfCharge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/cells"
+                android:layout_alignTop="@+id/cells"
+                android:layout_alignRight="@+id/cells"
+                android:layout_alignBottom="@+id/cells"
+                android:layout_margin="1dp"
+                android:gravity="center|top"
+                android:text="100%"
+                android:textSize="50dp"
+                android:textColor="#FFFFFF" />
+        </RelativeLayout>
 
-
-        <ImageView
-            android:id="@+id/imageViewArrow"
+        <TextView
+            android:id="@+id/currentFlowArrow"
+            android:text="4.1 A"
+            android:textSize="25dp"
+            android:textColor="#000000"
+            android:gravity="center"
             android:layout_width="match_parent"
             android:layout_marginTop="70dp"
             android:layout_height="200dp"
             android:background="@drawable/arrow">
 
-        </ImageView>
+        </TextView>
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
