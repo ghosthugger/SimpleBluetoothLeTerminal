@@ -278,12 +278,16 @@ public class DevicesFragment extends ListFragment {
     @Override
     public void onListItemClick(@NonNull ListView l, @NonNull View v, int position, long id) {
         stopScan();
-        BluetoothDevice device = listItems.get(position-1);
+        BluetoothDevice device = listItems.get(position - 1);
+        startBatteryStatusFragment(device.getAddress());
+    }
+
+    public void startBatteryStatusFragment(String address) {
         Bundle args = new Bundle();
-        args.putString("device", device.getAddress());
-        Fragment fragment = new TerminalFragment();
+        args.putString("device", address);
+        Fragment fragment = new BatteryStatusFragment();
         fragment.setArguments(args);
-        getFragmentManager().beginTransaction().replace(R.id.fragment, fragment, "terminal").addToBackStack(null).commit();
+        getFragmentManager().beginTransaction().replace(R.id.fragment, fragment, "Battery status").addToBackStack(null).commit();
     }
 
     /**

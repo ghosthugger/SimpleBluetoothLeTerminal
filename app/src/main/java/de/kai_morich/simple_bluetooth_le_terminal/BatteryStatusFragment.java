@@ -1,12 +1,17 @@
 package de.kai_morich.simple_bluetooth_le_terminal;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -28,12 +33,16 @@ public class BatteryStatusFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private String deviceAddress;
+
     private ImageView arrow;
     private TextView stateOfCharge;
     private TextView cell1Voltage;
     private TextView cell2Voltage;
     private TextView cell3Voltage;
     private TextView cell4Voltage;
+
+    private TextView currentFlowArrow;
 
     private int mInterval = 5000; // 5 seconds by default, can be changed later
     private Handler mHandler;
@@ -81,6 +90,9 @@ public class BatteryStatusFragment extends Fragment {
         }
 
         mHandler = new Handler();
+        setHasOptionsMenu(true);
+
+        deviceAddress = getArguments().getString("device");
     }
 
     @Override
@@ -108,6 +120,7 @@ public class BatteryStatusFragment extends Fragment {
         cell2Voltage = (TextView)view.findViewById(R.id.cell2);
         cell3Voltage = (TextView)view.findViewById(R.id.cell3);
         cell4Voltage = (TextView)view.findViewById(R.id.cell4);
+        currentFlowArrow = (TextView)view.findViewById(R.id.currentFlowArrow);
 
         startRepeatingTask();
 
@@ -144,5 +157,33 @@ public class BatteryStatusFragment extends Fragment {
         String cell4VoltageText=String.format("%1.2fv",status.cell4Voltage);
         cell4Voltage.setText(cell4VoltageText);
 
+        String currentFlowArrowText=String.format("%1.2fA",status.currentFlow);
+        currentFlowArrow.setText(currentFlowArrowText);
+
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_battery_status, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.open_terminal) {
+            startTerminal();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void startTerminal() {
+        Bundle args = new Bundle();
+        args.putString("device", deviceAddress);
+        Fragment newFragment = new TerminalFragment();
+        newFragment.setArguments(args);
+        getFragmentManager().beginTransaction().replace(R.id.fragment, newFragment, "Terminal").addToBackStack(null).commit();
     }
 }

@@ -135,6 +135,7 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
 
         View sendBtn = view.findViewById(R.id.send_btn);
         sendBtn.setOnClickListener(v -> send(sendText.getText().toString()));
+
         return view;
     }
 
@@ -178,7 +179,10 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     }
 
     private void startBatteryStatus() {
+        Bundle args = new Bundle();
+        args.putString("device", deviceAddress);
         Fragment newFragment = new BatteryStatusFragment();
+        newFragment.setArguments(args);
         getFragmentManager().beginTransaction().replace(R.id.fragment, newFragment, "Battery status").addToBackStack(null).commit();
     }
 
