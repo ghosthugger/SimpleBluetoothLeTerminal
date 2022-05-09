@@ -30,6 +30,10 @@ public class BatteryStatusFragment extends Fragment {
 
     private ImageView arrow;
     private TextView stateOfCharge;
+    private TextView cell1Voltage;
+    private TextView cell2Voltage;
+    private TextView cell3Voltage;
+    private TextView cell4Voltage;
 
     private int mInterval = 5000; // 5 seconds by default, can be changed later
     private Handler mHandler;
@@ -99,8 +103,11 @@ public class BatteryStatusFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_battery_status, container, false);
 //        arrow = view.findViewById(R.id.currentFlowArrow);
 
-        Object tmp = view.findViewById(R.id.stateOfCharge);
         stateOfCharge = (TextView)view.findViewById(R.id.stateOfCharge);
+        cell1Voltage = (TextView)view.findViewById(R.id.cell1);
+        cell2Voltage = (TextView)view.findViewById(R.id.cell2);
+        cell3Voltage = (TextView)view.findViewById(R.id.cell3);
+        cell4Voltage = (TextView)view.findViewById(R.id.cell4);
 
         startRepeatingTask();
 
@@ -127,6 +134,15 @@ public class BatteryStatusFragment extends Fragment {
 
         String stateOfChargeText=String.format("%3.0f%%",status.chargeState);
         stateOfCharge.setText(stateOfChargeText);
+
+        String cell1VoltageText=String.format("%1.2fv",status.cell1Voltage);
+        cell1Voltage.setText(cell1VoltageText);
+        String cell2VoltageText=String.format("%1.2fv",status.cell2Voltage);
+        cell2Voltage.setText(cell2VoltageText);
+        String cell3VoltageText=String.format("%1.2fv",status.cell3Voltage);
+        cell3Voltage.setText(cell3VoltageText);
+        String cell4VoltageText=String.format("%1.2fv",status.cell4Voltage);
+        cell4Voltage.setText(cell4VoltageText);
 
     }
 }
