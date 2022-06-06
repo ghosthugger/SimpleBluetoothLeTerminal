@@ -1,7 +1,6 @@
 package de.kai_morich.simple_bluetooth_le_terminal;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
@@ -11,12 +10,10 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
 import android.os.IBinder;
-import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
@@ -34,7 +31,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -61,6 +57,7 @@ public class BatteryStatusFragment extends Fragment implements ServiceConnection
     private String newline = TextUtil.newline_crlf;
     private boolean pendingNewline = false;
     private String receiveBuffer;
+    private int commandsInFlight = 0;
 
     private ImageView arrow;
     private TextView stateOfCharge;
@@ -77,7 +74,8 @@ public class BatteryStatusFragment extends Fragment implements ServiceConnection
         @Override
         public void run() {
             try {
-                updateRandom();
+                //updateRandom();
+                pollBatteryStatus();
             } finally {
                 // 100% guarantee that this always happens, even if
                 // your update method throws an exception
@@ -212,10 +210,20 @@ public class BatteryStatusFragment extends Fragment implements ServiceConnection
     }
 
     public void updateRandom() {
-        update(BatteryStatus.getRandomState());
+        updateBatteryStatusUI(BatteryStatus.getRandomState());
     }
 
-    public void update(BatteryStatus status) {
+    public void pollBatteryStatus() {
+        // TODO timeout commandsInFlight after some timeout
+        if(commandsInFlight<1) {
+            // TODO take timestamp
+            if(send("p") == true) {
+                commandsInFlight=1;
+            }
+        }
+    }
+
+    public void updateBatteryStatusUI(BatteryStatus status) {
 
 /*        Group group = arrow.findViewById(R.id.arrow_rotation);
 
@@ -291,10 +299,10 @@ public class BatteryStatusFragment extends Fragment implements ServiceConnection
         service.disconnect();
     }
 
-    private void send(String str) {
+    private boolean send(String str) {
         if(connected != Connected.True) {
             Toast.makeText(getActivity(), "not connected", Toast.LENGTH_SHORT).show();
-            return;
+            return false;
         }
         try {
             byte[] data;
@@ -303,7 +311,10 @@ public class BatteryStatusFragment extends Fragment implements ServiceConnection
             service.write(data);
         } catch (Exception e) {
             onSerialIoError(e);
+            return false;
         }
+
+        return true;
     }
 
     private void receive(byte[] data) {
@@ -328,14 +339,20 @@ public class BatteryStatusFragment extends Fragment implements ServiceConnection
                 receiveBuffer = "";
                 for(int i=0; i<lines.size(); i++) {
                     BatteryStatus status = BMS4SUtil.parseLine(lines.get(i));
-                    update(status);
+                    if(status != null) {
+                        commandsInFlight--;
+                        updateBatteryStatusUI(status);
+                    }
                 }
             } else {
                 // keep the chars of the last line for next time
                 receiveBuffer = lines.get(lines.size() - 1);
                 for(int i=0; i<lines.size()-1; i++) {
                     BatteryStatus status = BMS4SUtil.parseLine(lines.get(i));
-                    update(status);
+                    if(status != null) {
+                        commandsInFlight--;
+                        updateBatteryStatusUI(status);
+                    }
                 }
             }
         }
