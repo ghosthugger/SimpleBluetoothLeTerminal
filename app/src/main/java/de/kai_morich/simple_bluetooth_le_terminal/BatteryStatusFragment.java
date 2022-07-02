@@ -54,10 +54,11 @@ public class BatteryStatusFragment extends Fragment implements ServiceConnection
     private SerialService service;
     private Connected connected = Connected.False;
     private boolean initialStart = true;
-    private String newline = TextUtil.newline_crlf;
+    private String newline = TextUtil.newline_lf;
     private boolean pendingNewline = false;
     private String receiveBuffer;
     private int commandsInFlight = 0;
+    private long commandTimestamp = 0;
 
     private ImageView arrow;
     private TextView stateOfCharge;
@@ -214,9 +215,11 @@ public class BatteryStatusFragment extends Fragment implements ServiceConnection
     }
 
     public void pollBatteryStatus() {
-        // TODO timeout commandsInFlight after some timeout
+        if(commandTimestamp + 10000 < System.currentTimeMillis())
+            commandsInFlight = 0;
+
         if(commandsInFlight<1) {
-            // TODO take timestamp
+            commandTimestamp = System.currentTimeMillis();
             if(send("p") == true) {
                 commandsInFlight=1;
             }
@@ -334,7 +337,7 @@ public class BatteryStatusFragment extends Fragment implements ServiceConnection
             catch(IOException e) {
             }
 
-            if(receiveBuffer.lastIndexOf(newline) == receiveBuffer.length()-2) {
+            if(receiveBuffer.lastIndexOf(newline) == receiveBuffer.length()-1) {
                 // received a full line - no spillover to next package
                 receiveBuffer = "";
                 for(int i=0; i<lines.size(); i++) {
